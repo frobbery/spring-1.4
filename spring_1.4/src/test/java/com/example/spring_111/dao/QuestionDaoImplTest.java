@@ -7,9 +7,9 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.mock;
 
 @DisplayName("Класс QuestionDaoImpl")
 class QuestionDaoImplTest {
@@ -20,7 +20,7 @@ class QuestionDaoImplTest {
     @Test
     void shouldAddQuestion() {
         //given
-        var question = question();
+        var question = mock(QuestionWithAnswers.class);
 
         //when
         sut.addQuestion(question);
@@ -33,7 +33,7 @@ class QuestionDaoImplTest {
     @Test
     void shouldGetAllQuestions() {
         //given
-        var question = question();
+        var question = mock(QuestionWithAnswers.class);
         sut.addQuestion(question);
 
         //when
@@ -53,9 +53,5 @@ class QuestionDaoImplTest {
 
         //then
         assertEquals(sut.getAllQuestions().size(), 3);
-    }
-
-    private QuestionWithAnswers question() {
-        return new QuestionWithAnswers("someQuestion", "someAnswer", List.of("someAnswer"));
     }
 }

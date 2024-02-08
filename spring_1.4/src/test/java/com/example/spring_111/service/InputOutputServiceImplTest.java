@@ -1,5 +1,6 @@
 package com.example.spring_111.service;
 
+import com.example.spring_111.domain.QuestionWithAnswers;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -8,10 +9,12 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mockito;
 
 import java.io.ByteArrayInputStream;
+import java.util.List;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 @DisplayName("Класс InputOutputServiceImpl")
 class InputOutputServiceImplTest {
@@ -19,7 +22,21 @@ class InputOutputServiceImplTest {
     private final InputOutputServiceImpl sut = Mockito.spy(InputOutputServiceImpl.class);
 
     @Test
-    @DisplayName("Должен взвращать введенные имя и фамилию")
+    @DisplayName("Должен печатать вопросы из списка")
+    void shouldPrintQuestionsFromList() {
+        //given
+        var question = Mockito.mock(QuestionWithAnswers.class);
+        var questions = List.of(question);
+
+        //when
+        sut.printAllQuestions(questions);
+
+        //then
+        verify(sut, times(1)).print(question.toString());
+    }
+
+    @Test
+    @DisplayName("Должен возвращать введенные имя и фамилию")
     void shouldReturnPrintedNameAndSurname() {
         //given
         var name = "first last";
