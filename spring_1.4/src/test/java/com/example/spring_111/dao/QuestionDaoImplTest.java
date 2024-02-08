@@ -5,6 +5,8 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -12,9 +14,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @DisplayName("Класс QuestionDaoImpl")
 class QuestionDaoImplTest {
 
-    private final QuestionDaoImpl sut = new QuestionDaoImpl();
+    private final QuestionDaoImpl sut = new QuestionDaoImpl("/example.csv");
 
-    @DisplayName("Должен добавлять вопросы")
+    @DisplayName("Должен добавлять вопрос")
     @Test
     void shouldAddQuestion() {
         //given
@@ -41,6 +43,16 @@ class QuestionDaoImplTest {
         Assertions.assertThat(result)
                 .contains(question)
                 .hasSize(1);
+    }
+
+    @Test
+    @DisplayName("Должен добавлять вопросы из файла")
+    void shouldAddQuestionsFromFile() throws IOException, URISyntaxException {
+        //when
+        sut.addQuestionsFromFile();
+
+        //then
+        assertEquals(sut.getAllQuestions().size(), 3);
     }
 
     private QuestionWithAnswers question() {

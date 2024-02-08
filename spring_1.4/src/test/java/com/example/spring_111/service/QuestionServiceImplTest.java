@@ -9,16 +9,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.net.URISyntaxException;
 import java.util.List;
-import java.util.Scanner;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @DisplayName("Класс QuestionServiceImpl")
@@ -28,37 +24,29 @@ class QuestionServiceImplTest {
     @Mock
     private QuestionDao questionDao;
 
+    @Mock
+    private InputOutputService inputOutputService;
+
     private QuestionServiceImpl sut;
 
     @BeforeEach
-    void setup() {
-        this.sut = new QuestionServiceImpl(questionDao, "/example.csv", 1);
-    }
-
-    @Test
-    @DisplayName("Должен добавлять вопросы из файла")
-    void shouldAddQuestionsFromFile() throws IOException, URISyntaxException {
-        //when
-        sut.addQuestions();
-
-        //then
-        verify(questionDao, times(3)).addQuestion(any());
+    void setup() throws IOException, URISyntaxException {
+        this.sut = new QuestionServiceImpl(questionDao, 1, inputOutputService);
     }
 
     @Test
     @DisplayName("Должен выводить все вопросы")
     void shouldPrintAllQuestions() {
         //given
-        var question = question();
-        when(questionDao.getAllQuestions()).thenReturn(List.of(question));
-        var printStream = mock(PrintStream.class);
+        var questions = List.of(question());
+        when(questionDao.getAllQuestions()).thenReturn(questions);
 
         //when
-        sut.printAllQuestionsWithAnswers(printStream);
+        sut.printAllQuestionsWithAnswers();
 
         //then
         verify(questionDao, times(1)).getAllQuestions();
-        verify(printStream, times(1)).println(question);
+        verify(inputOutputService, times(1)).printAllQuestions(questions);
     }
 
     @Test
@@ -67,11 +55,10 @@ class QuestionServiceImplTest {
         //given
         var question = question();
         when(questionDao.getAllQuestions()).thenReturn(List.of(question));
-        var printStream = mock(PrintStream.class);
-        var scanner = new Scanner(new ByteArrayInputStream("First Last\nanswer1".getBytes()));
+        when(inputOutputService.printQuestionAndGetAnswer(question)).thenReturn("answer1");
 
         //when
-        var result = sut.conductTesting(printStream, scanner);
+        var result = sut.conductTesting();
 
         //then
         assertTrue(result);
@@ -84,11 +71,10 @@ class QuestionServiceImplTest {
         //given
         var question = question();
         when(questionDao.getAllQuestions()).thenReturn(List.of(question));
-        var printStream = mock(PrintStream.class);
-        var scanner = new Scanner(new ByteArrayInputStream("First Last\nanswer2".getBytes()));
+        when(inputOutputService.printQuestionAndGetAnswer(question)).thenReturn("answer2");
 
         //when
-        var result = sut.conductTesting(printStream, scanner);
+        var result = sut.conductTesting();
 
         //then
         assertFalse(result);
